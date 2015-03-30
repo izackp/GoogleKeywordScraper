@@ -7,10 +7,13 @@ namespace googleKeywordScraper
 {
 	class MainClass
 	{
+		//Docker and DNS: http://stackoverflow.com/questions/25130536/dockerfile-docker-build-cant-download-packages-centos-yum-debian-ubuntu-ap
 		//All strings inbetween <h3 class="r"><a href="/url?q= and &amp;
 		const string regexPattern = @"(?<=<h3 class=\""r\""><a href=\""\/url\?q=)(.*?)(?=&amp;)";
 		public static void Main (string[] args)
 		{
+
+
 			args = Sample ();
 			if (args.Length < 2 || args.Length > 3) {
 				ShowError ("Invalid Amount of Parameters: Must have 2 or 3 parameters. 1: keywords delimited by +'s and 2: number of results (10, 50, 100) 3: Website url for which you want a ranking");
@@ -32,8 +35,11 @@ namespace googleKeywordScraper
 				rankingUrl = myUri.Host.ToLower();
 			}
 
+			IPHostEntry hostEntry = Dns.GetHostEntry("www.google.com");
 			WebClient fetch = new WebClient();
-			string data = fetch.DownloadString("https://www.google.com/search?q=" + keywords + "&num=" + numResults + "&as_qdr=all&ei=LrUVVf7UMrPfsAS7lICgCw&sa=N&biw=1440&bih=690");
+			string downloadUrl = "https://" + hostEntry.AddressList [0].ToString() + "/search?q=" + keywords + "&num=" + numResults + "&as_qdr=all&ei=LrUVVf7UMrPfsAS7lICgCw&sa=N&biw=1440&bih=690";
+			fetch.Headers.Set (HttpRequestHeader.Host, "www.google.com");
+			string data = fetch.DownloadString(downloadUrl);
 			string[] results = TopUrls (data);
 
 			int rank = -1;
