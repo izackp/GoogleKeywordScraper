@@ -24,11 +24,10 @@ namespace googleKeywordScraper
 
 			string keywords = args[0];
 			string numResults = args[1];
+			string url = args [2];
 			string rankingUrl = null;
 			if (args.Length > 2) {
-				string url = args [2];
-				if (url.Substring (0, 7) != "http://")
-					url = "http://" + url;
+				url = CleanUrl (url);
 				Uri myUri = new Uri(url);   
 				rankingUrl = myUri.Host.ToLower();
 			}
@@ -39,11 +38,13 @@ namespace googleKeywordScraper
 
 			int rank = -1;
 
-			for (int i = 0; i < results.Length; i += 1) {
-				Uri eachUri = new Uri(results[i]);
-				if (eachUri.Host.ToLower () == rankingUrl) {
-					rank = i + 1;
-					break;
+			if (rankingUrl != null) {
+				for (int i = 0; i < results.Length; i += 1) {
+					Uri eachUri = new Uri (results [i]);
+					if (eachUri.Host.ToLower () == rankingUrl) {
+						rank = i + 1;
+						break;
+					}
 				}
 			}
 
@@ -57,6 +58,22 @@ namespace googleKeywordScraper
 			Console.WriteLine ("{\"results\": [\n\"" + joined + "\"\n]" + rankingJson + "\n}");
 		}
 
+		public static string CleanUrl(string url) {
+			if (url == null)
+				return null;
+
+			if (url.Length >= 8) {
+			
+				string httpProtocol = url.Substring (0, 7);
+				string httpsProtocol = url.Substring (0, 8);
+				if (httpProtocol != "http://" && httpsProtocol != "https://")
+					url = "http://" + url;
+			} else {
+				url = "http://" + url;
+			}
+			return url;
+		}
+
 		public static string[] TopUrls(string data) {
 			Regex regex = new Regex (regexPattern);
 			MatchCollection collection = regex.Matches (data);
@@ -68,7 +85,7 @@ namespace googleKeywordScraper
 		public static string[] Sample() {
 			string keywords = "web+application+development+orlando";
 			string numResults = "100";
-			string rankingSite = "cloudspace.com";
+			string rankingSite = "https://www.wikipedia.org/";
 			return new string[] { keywords, numResults, rankingSite};
 		}
 
