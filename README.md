@@ -10,7 +10,7 @@ Input must have 2-3 arguments:
 
 #### Example Result
 Output is a json with a list of urls and a ranking if you provided a ranking url:
-`
+```
 {
     "results": [
         "http://blah.com",
@@ -18,4 +18,4 @@ Output is a json with a list of urls and a ranking if you provided a ranking url
     ]
     "ranking": 1
 }
-`
+```
